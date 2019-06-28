@@ -27,6 +27,11 @@ func resourceSite() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"domain_aliases": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 
 			"deploy_url": {
 				Type:     schema.TypeString,
@@ -108,6 +113,7 @@ func resourceSiteRead(d *schema.ResourceData, metaRaw interface{}) error {
 	site := resp.Payload
 	d.Set("name", site.Name)
 	d.Set("custom_domain", site.CustomDomain)
+	d.Set("domain_aliases", site.DomainAliases)
 	d.Set("deploy_url", site.DeployURL)
 	d.Set("repo", nil)
 
@@ -149,12 +155,26 @@ func resourceSiteDelete(d *schema.ResourceData, metaRaw interface{}) error {
 	return err
 }
 
+func expandStringSlice(s []interface{}) []string {
+	result := make([]string, len(s), len(s))
+	for k, v := range s {
+		// Handle the Terraform parser bug which turns empty strings in lists to nil.
+		if v == nil {
+			result[k] = ""
+		} else {
+			result[k] = v.(string)
+		}
+	}
+	return result
+}
+
 // Returns the SiteSetup structure that can be used for creation or updating.
 func resourceSite_setupStruct(d *schema.ResourceData) *models.SiteSetup {
 	result := &models.SiteSetup{
 		Site: models.Site{
-			Name:         d.Get("name").(string),
-			CustomDomain: d.Get("custom_domain").(string),
+			Name:          d.Get("name").(string),
+			CustomDomain:  d.Get("custom_domain").(string),
+			DomainAliases: expandStringSlice(d.Get("domain_aliases").([]interface{})),
 		},
 	}
 

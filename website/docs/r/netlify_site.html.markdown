@@ -34,6 +34,7 @@ The following arguments are supported:
 * `name` - (Required) - Name of your site on Netlify (e.g. **mysite**.netlify.com)
 * `repo` - (Required) - See [Repository](#repo)
 * `custom_domain` - (Optional) - Custom domain of the site, must be configured using a CNAME in accordance with [Netlify's docs](https://www.netlify.com/docs/custom-domains). (e.g. `www.example.com`)
+* `domain_aliases` - (Optional) - List of extra domain aliases for the site, must be configured using a CNAME in accordance with [Netlify's docs](https://www.netlify.com/docs/custom-domains). (e.g. `www.example.com`)
 * `deploy_url` - (Optional)
 
 ### Repository
