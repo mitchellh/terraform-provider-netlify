@@ -23,6 +23,11 @@ func resourceSite() *schema.Resource {
 				Computed: true,
 			},
 
+			"team_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+
 			"custom_domain": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -77,16 +82,26 @@ func resourceSite() *schema.Resource {
 
 func resourceSiteCreate(d *schema.ResourceData, metaRaw interface{}) error {
 	meta := metaRaw.(*Meta)
-
-	params := operations.NewCreateSiteParams()
-	params.Site = resourceSite_setupStruct(d)
-
-	resp, err := meta.Netlify.Operations.CreateSite(params, meta.AuthInfo)
-	if err != nil {
-		return err
+	var site *models.Site
+	if v, ok := d.GetOk("team_name"); ok {
+		params := operations.NewCreateSiteInTeamParams()
+		params.Site = resourceSite_setupStruct(d)
+		params.AccountSlug = v.(interface{}).(string)
+		resp, err := meta.Netlify.Operations.CreateSiteInTeam(params, meta.AuthInfo)
+		if err != nil {
+			return err
+		}
+		site = resp.Payload
+	} else {
+		params := operations.NewCreateSiteParams()
+		params.Site = resourceSite_setupStruct(d)
+		resp, err := meta.Netlify.Operations.CreateSite(params, meta.AuthInfo)
+		if err != nil {
+			return err
+		}
+		site = resp.Payload
 	}
-
-	d.SetId(resp.Payload.ID)
+	d.SetId(site.ID)
 	return resourceSiteRead(d, metaRaw)
 }
 
