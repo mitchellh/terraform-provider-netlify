@@ -76,7 +76,7 @@ resource "netlify_deploy_key" "key" {}
 
 resource "netlify_site" "main" {
   name = "<name of netlify site>"
-
+  team_name = "<(optional) name of netlify team>"
   repo {
     repo_branch = "<github branch to deploy>"
     command = "<command used to build your website>"
