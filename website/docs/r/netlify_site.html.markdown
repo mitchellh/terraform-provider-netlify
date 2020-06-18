@@ -15,7 +15,8 @@ Primary settings for a Netlify site - should contain the bulk of your configurat
 ```hcl
 resource "netlify_site" "main" {
   name = "my-site"
-
+  account_slug = "site-team"
+  
   repo {
     command       = "middleman build"
     deploy_key_id = "${netlify_deploy_key.key.id}"
@@ -32,6 +33,7 @@ resource "netlify_site" "main" {
 The following arguments are supported:
 
 * `name` - (Required) - Name of your site on Netlify (e.g. **mysite**.netlify.com)
+* `account_slug` - (Optional) - Account slug for the targeted team, defaults to user's default team.
 * `repo` - (Required) - See [Repository](#repo)
 * `custom_domain` - (Optional) - Custom domain of the site, must be configured using a CNAME in accordance with [Netlify's docs](https://www.netlify.com/docs/custom-domains). (e.g. `www.example.com`)
 * `deploy_url` - (Optional)
